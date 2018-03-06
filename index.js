@@ -75,9 +75,9 @@ server.post('/get-details', function (req, res) {
                     //console.log(weather_info);
                     //console.log(weather_info.temp);
                     let dataToSend = 'Today the temperature in ' + cityName + ' is ' + weather_info.results.channel.item.condition.temp + '°C, it will be ' + weather_info.results.channel.item.condition.text +' ';
-                    dataToSend += '<br/>Forecast for next 7 days:'
+                    dataToSend += '\nForecast for next 7 days:'
                     for (var i = 1; i <= 7; i++){
-                        dataToSend += '<br/>' + weather_info.results.channel.item.forecast[i].day + ' - ' + weather_info.results.channel.item.forecast[i].text + '. High: ' + weather_info.results.channel.item.forecast[i].high + '°C' + ' Low: ' + weather_info.results.channel.item.forecast[i].low + '°C';
+                        dataToSend += '\n' + weather_info.results.channel.item.forecast[i].day + ' - ' + weather_info.results.channel.item.forecast[i].text + '. High: ' + weather_info.results.channel.item.forecast[i].high + '°C' + ' Low: ' + weather_info.results.channel.item.forecast[i].low + '°C';
                     }
                     console.log(dataToSend);
                     return res.json({

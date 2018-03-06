@@ -62,8 +62,8 @@ server.post('/get-details', function (req, res) {
         //let path = encodeURI(host + '/v1/public/yql?q=select%20wind%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text="' + encodeURIComponent(cityName)+'"&format=json');
         let path = host + '/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where text="' + cityName +'") and u="c"&format=json';
         console.log(path);
+        try{
         http.get(path, (responseFromAPI) => {
-
             responseFromAPI.on('data', function (chunk) {
                 let weather_info = JSON.parse(chunk)['query'];
                 //let weather_info = JSON.parse(chunk)['query']['results']['channel']['item']['condition'];
@@ -95,6 +95,13 @@ server.post('/get-details', function (req, res) {
                 source: 'get-movie-details'
             });
         });
+    } catch(e){
+        return res.json({
+            speech: 'Something went wrong!',
+            displayText: 'Something went wrong!',
+            source: 'get-movie-details'
+        });
+    }
         //res.setHeader('Content-Type', 'application/json');
         //res.send(JSON.stringify({ 'speech': cityName, 'displayText': cityName }));
     }

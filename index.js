@@ -74,11 +74,13 @@ server.post('/get-details', function (req, res) {
                 }else{
                     //console.log(weather_info);
                     //console.log(weather_info.temp);
-                    let dataToSend = 'Today the temperature in ' + cityName + ' is ' + weather_info.results.channel.item.condition.temp + '°C, it will be ' + weather_info.results.channel.item.condition.text +' ';
-                    dataToSend += '\nForecast for next 7 days:'
-                    for (var i = 1; i <= 7; i++){
-                        dataToSend += '\n' + weather_info.results.channel.item.forecast[i].day + ' - ' + weather_info.results.channel.item.forecast[i].text + '. High: ' + weather_info.results.channel.item.forecast[i].high + '°C' + ' Low: ' + weather_info.results.channel.item.forecast[i].low + '°C';
-                    }
+                    let dataToSend = 'Today the temperature in ' + cityName + ' is ' + weather_info.results.channel.item.condition.temp + '°C, it will be ' + weather_info.results.channel.item.condition.text +'.';
+                    // for (var i = 1; i <= 7; i++){
+                    //     dataToSend += '\n' + weather_info.results.channel.item.forecast[i].day + ' - ' + weather_info.results.channel.item.forecast[i].text + '. High: ' + weather_info.results.channel.item.forecast[i].high + '°C' + ' Low: ' + weather_info.results.channel.item.forecast[i].low + '°C';
+                    // }
+                    dataToSend += ' Tomorrow it will be ' + weather_info.results.channel.item.forecast[1].text + ',';
+                    dataToSend += ' high: ' + weather_info.results.channel.item.forecast[1].high + '°C';
+                    dataToSend += ' and low: ' + weather_info.results.channel.item.forecast[1].low+ '°C';
                     console.log(dataToSend);
                     return res.json({
                         speech: dataToSend,

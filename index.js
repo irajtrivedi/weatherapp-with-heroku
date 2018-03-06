@@ -80,7 +80,7 @@ server.post('/get-details', function (req, res) {
                     // }
                     dataToSend += ' Tomorrow it will be ' + weather_info.results.channel.item.forecast[1].text + ',';
                     dataToSend += ' high: ' + weather_info.results.channel.item.forecast[1].high + '°C';
-                    dataToSend += ' and low: ' + weather_info.results.channel.item.forecast[1].low+ '°C';
+                    dataToSend += ' and low: ' + weather_info.results.channel.item.forecast[1].low+ '°C.';
                     console.log(dataToSend);
                     return res.json({
                         speech: dataToSend,

@@ -29,26 +29,37 @@ server.post('/get-details', function (req, res) {
 
 function fetch_weather_info(cityName) {
     let path = weather_host + '/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where text="' + cityName + '") and u="c"&format=json';
-    //console.log(path);
     let dataToSend = '';
-    var req = http.request(path, function (responseFromAPI) {
-        responseFromAPI.on('data', function (chunk) {
-            let weather_info = JSON.parse(chunk)['query'];
-            if (weather_info.count == 0) {
-                dataToSend = 'Sorry! Weather not found for ' + cityName;
-            } else {
-                dataToSend = 'Today the temperature in ' + cityName + ' is ' + weather_info.results.channel.item.condition.temp + '°C, it will be ' + weather_info.results.channel.item.condition.text + '.';
-                dataToSend += ' Tomorrow it will be ' + weather_info.results.channel.item.forecast[1].text + ',';
-                dataToSend += ' high: ' + weather_info.results.channel.item.forecast[1].high + '°C';
-                dataToSend += ' and low: ' + weather_info.results.channel.item.forecast[1].low + '°C.';
-            }
-        });
-    });
-    req.on('error', function(e){
-        console.log('problem with request: ' + e.message);
-        dataToSend = 'Sorry! Something went wrong';
-    });
-    return dataToSend;
+    // var req = http.get(path, function (err, responseFromAPI, body) {
+    //     let weather_info = JSON.parse(body);
+    //     if (weather_info.count == 0) {
+    //         dataToSend = 'Sorry! Weather not found for ' + cityName;
+    //     } else {
+    //         dataToSend = 'Today the temperature in ' + cityName + ' is ' + weather_info.results.channel.item.condition.temp + '°C, it will be ' + weather_info.results.channel.item.condition.text + '.';
+    //         dataToSend += ' Tomorrow it will be ' + weather_info.results.channel.item.forecast[1].text + ',';
+    //         dataToSend += ' high: ' + weather_info.results.channel.item.forecast[1].high + '°C';
+    //         dataToSend += ' and low: ' + weather_info.results.channel.item.forecast[1].low + '°C.';
+    //     }
+    // });
+    try{
+    http.get(path, function (err, response, body) {
+        let weather_info = JSON.parse(body);
+        if (err || weather_info.count == 0) {
+            dataToSend = 'Sorry! Weather not found for ' + cityName;
+            console.log(err);
+            return dataToSend;
+        } else {
+            dataToSend = 'Today the temperature in ' + cityName + ' is ' + weather_info.results.channel.item.condition.temp + '°C, it will be ' + weather_info.results.channel.item.condition.text + '.';
+            dataToSend += ' Tomorrow it will be ' + weather_info.results.channel.item.forecast[1].text + ',';
+            dataToSend += ' high: ' + weather_info.results.channel.item.forecast[1].high + '°C';
+            dataToSend += ' and low: ' + weather_info.results.channel.item.forecast[1].low + '°C.';
+            return dataToSend;
+        }
+    })
+    } catch(e){
+        dataToSend = 'Sorry! Weather not found for ' + cityName;
+        return dataToSend;
+    }
 }
 
 server.listen((process.env.PORT || 8000), function () {

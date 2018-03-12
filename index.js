@@ -31,7 +31,7 @@ function fetch_weather_info(cityName) {
     let path = weather_host + '/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where text="' + cityName + '") and u="c"&format=json';
     //console.log(path);
     let dataToSend = '';
-    var req = http.get(path, (responseFromAPI) => {
+    var req = http.request(path, function (responseFromAPI) {
         responseFromAPI.on('data', function (chunk) {
             let weather_info = JSON.parse(chunk)['query'];
             if (weather_info.count == 0) {

@@ -35,11 +35,8 @@ function fetch_weather_info(cityName, callback) {
             }
         });
     }, (error) => {
-        return res.json({
-            speech: 'Something went wrong!',
-            displayText: 'Something went wrong!',
-            source: 'get-movie-details'
-        });
+        dataToSend = 'Sorry! Weather not found for ' + cityName;
+        callback(dataToSend);
     });
 }
 

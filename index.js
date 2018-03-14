@@ -60,6 +60,16 @@ server.post('/get-details', function (req, res) {
                     displayText: result
                 });
             }
+            else{
+                fetch_weather_info(cityName, function (result) {
+                    if (result !== undefined) {
+                        return res.json({
+                            speech: result,
+                            displayText: result
+                        });
+                    }
+                });
+            }
         });
     }
 });

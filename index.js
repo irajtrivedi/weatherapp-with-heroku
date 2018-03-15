@@ -90,10 +90,41 @@ function fetch_book_details(bookType, callback) {
     }
 }
 
+function fetch_book_reviews(bookName, callback) {
+    let path = book_host + '/svc/books/v3/reviews.json?api-key=7dfc493d35bd4c87aff6f67a60e24b8c&title=' + bookName.toLowerCase();
+    let dataToSend = '';
+    let book_info = '';
+    //Fetching data from NYTimes best-seller list
+    http.get(path, responseFromAPI => {
+        responseFromAPI.on('data', function (chunk) {
+            if (chunk != undefined) {
+                book_info += chunk;
+            }
+        })
+        responseFromAPI.on('end', function () {
+            book_info = JSON.parse(book_info);
+            if (book_info === undefined || book_info.status != 'OK' || book_info == '' || book_info.num_results == 0) {
+                dataToSend = "Sorry! couldn't find the review for "+ bookName +". Could you be more specific?\nExample: 'reviews for Steve Jobs' or 'reviews for Angels and Demons'?";
+                callback(dataToSend);
+            } else {
+                dataToSend = "Below is the review for " +  book_info.results[0].book_title + ' wriiten by ' + book_info.results[0].book_author + " and reviewed by " + book_info.results[0].byline;
+                dataToSend += "\nSummary:" + book_info.results[0].summary;
+                dataToSend += "\nFor more please click on the below link:";
+                dataToSend += "\n" + book_info.results[0].url;
+                callback(dataToSend);
+            }
+        })
+    }, (error) => {
+        dataToSend = "Sorry! couldn't fetch books list" + cityName;
+        callback(dataToSend);
+    });
+}
+
 server.post('/get-details', function (req, res) {
     let cityName = req.body.result.parameters.city;
     let bookType = req.body.result.parameters.bookType;
     let bookFlag = req.body.result.parameters.book;
+    let bookName = req.body.result.parameters.bookName;
 
     if (cityName === undefined && bookType === undefined) {
         return res.json({
@@ -109,7 +140,7 @@ server.post('/get-details', function (req, res) {
                 });
             }
         });
-    } else if (bookType != undefined) {
+    } else if (bookFlag != undefined && bookType != undefined && (bookName === undefined || bookName == '')) {
         if (bookType === undefined || bookType == '' && (bookFlag.toLowerCase() == "books" || bookFlag.toLowerCase() == "book" || bookFlag.toLowerCase() == "novel" || bookFlag.toLowerCase() == "novels")) {
             fetch_book_details(undefined, function (result) {
                 if (result !== undefined) {
@@ -129,6 +160,15 @@ server.post('/get-details', function (req, res) {
                 }
             });
         }
+    } else if (bookName != undefined && bookName != '') {
+        fetch_book_reviews(bookName, function (result) {
+            if (result !== undefined) {
+                return res.json({
+                    speech: result,
+                    displayText: result
+                });
+            }
+        });
     }
 });
 

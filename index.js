@@ -92,7 +92,8 @@ function fetch_book_details(bookType, callback) {
 
 server.post('/get-details', function (req, res) {
     let cityName = req.body.result.parameters.city;
-    let bookType = req.body.result.parameters.book;
+    let bookType = req.body.result.parameters.bookType;
+    let bookFlag = req.body.result.parameters.book;
 
     if (cityName === undefined && bookType === undefined) {
         return res.json({
@@ -109,7 +110,7 @@ server.post('/get-details', function (req, res) {
             }
         });
     } else if (bookType != undefined) {
-        if (bookType.toLowerCase() == "books" || bookType.toLowerCase() == "book" || bookType.toLowerCase() == "novel" || bookType.toLowerCase() == "novels") {
+        if (bookType === undefined || bookType == '' && (bookFlag.toLowerCase() == "books" || bookFlag.toLowerCase() == "book" || bookFlag.toLowerCase() == "novel" || bookFlag.toLowerCase() == "novels")) {
             fetch_book_details(undefined, function (result) {
                 if (result !== undefined) {
                     return res.json({
@@ -118,8 +119,7 @@ server.post('/get-details', function (req, res) {
                     });
                 }
             });
-        }
-        else {
+        } else {
             fetch_book_details(bookType.toLowerCase(), function (result) {
                 if (result !== undefined) {
                     return res.json({

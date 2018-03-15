@@ -107,9 +107,9 @@ function fetch_book_reviews(bookName, callback) {
                 dataToSend = "Sorry! couldn't find the review for "+ bookName +". Could you be more specific?\nExample: 'reviews for Steve Jobs' or 'reviews for Angels and Demons'?";
                 callback(dataToSend);
             } else {
-                dataToSend = "Below is the review for " +  book_info.results[0].book_title + ' wriiten by ' + book_info.results[0].book_author + " and reviewed by " + book_info.results[0].byline;
-                dataToSend += "\nSummary:" + book_info.results[0].summary;
-                dataToSend += "\nFor more please click on the below link:";
+                dataToSend = "Below is the summmary for " +  book_info.results[0].book_title + ' wriiten by ' + book_info.results[0].book_author + " and reviewed by " + book_info.results[0].byline;
+                dataToSend += "\n" + book_info.results[0].summary;
+                dataToSend += "\n\nFor more please click on the below link:";
                 dataToSend += "\n" + book_info.results[0].url;
                 callback(dataToSend);
             }

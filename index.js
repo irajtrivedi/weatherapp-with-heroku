@@ -19,7 +19,7 @@ function fetch_weather_info(cityName, callback) {
             if (chunk != undefined) {
                 weather_info += chunk;
             }
-        });
+        })
         responseFromAPI.on('end', function () {
             weather_info = JSON.parse(weather_info)['query'];
             if (weather_info === undefined || weather_info.count == 0 || weather_info == '') {
@@ -34,7 +34,7 @@ function fetch_weather_info(cityName, callback) {
                 //console.log("Reached in Else");
                 callback(dataToSend);
             }
-        });
+        })
     }, (error) => {
         dataToSend = 'Sorry! Weather not found for ' + cityName;
         callback(dataToSend);
@@ -46,43 +46,48 @@ function fetch_book_details(bookType, callback) {
     let dataToSend = '';
     let book_info = '';
     let flag;
-    http.get(path, function (responseFromAPI) {
-        responseFromAPI.on('data', function (chunk) {
-            if (chunk != undefined) {
-                book_info += chunk;
-            }
-        });
-        responseFromAPI.on('end', function () {
-            book_info = JSON.parse(book_info);
-            if (book_info === undefined || book_info.status != 'OK' || book_info == '') {
-                dataToSend = "Sorry! couldn't fetch books list";
-                callback(dataToSend);
-            }
-            else {
-                if (bookType === undefined) {
-                    dataToSend = "Great! what would you like to read? Fiction, Non-fiction, Sports, Fitness, Childrens's Picture Book, Business, Science";
-                    // for (var i = 0; i <= 15; i++) {
-                    //     dataToSend += "\n" + book_info.results.lists[i].display_name;
+    if (bookType === undefined) {
+        dataToSend = "Great to hear that! What would you like to read? Fiction, Non-fiction, Sports, Fitness, Childrens's Picture Book, Business or Science? Write down the genre to see best-seller list";
+        callback(dataToSend);
+    }
+    else {
+        //Fetching data from NYTimes best-seller list
+        http.get(path, responseFromAPI => {
+            responseFromAPI.on('data', function (chunk) {
+                if (chunk != undefined) {
+                    book_info += chunk;
+                }
+            })
+            responseFromAPI.on('end', function () {
+                book_info = JSON.parse(book_info);
+                if (book_info === undefined || book_info.status != 'OK' || book_info == '') {
+                    dataToSend = "Sorry! couldn't fetch books list";
                     callback(dataToSend);
-                    // }
-                    //console.log(dataToSend);
                 } else {
                     dataToSend = "Here's the list of Top 5 " + bookType.toUpperCase() + ' books for you:';
-                    if (bookType == 'fiction')
+                    if (bookType.toLowerCase() == 'fiction')
                         flag = 0;
                     else if (bookType.toLowerCase() == 'non-fiction' || bookType.toLowerCase() == 'nonfiction')
                         flag = 1;
+                    else if (bookType.toLowerCase() == 'sports' || bookType.toLowerCase() == 'fitness')
+                        flag = 15;
+                    else if (bookType.toLowerCase() == 'pictures book' || bookType.toLowerCase() == 'childrens book' || bookType.toLowerCase() == "children's book")
+                        flag = 8;
+                    else if (bookType.toLowerCase() == 'business' || bookType.toLowerCase() == 'corporate')
+                        flag = 13;
+                    else if (bookType.toLowerCase() == 'science' || bookType.toLowerCase() == 'maths')
+                        flag = 14;
                     for (var i = 0; i <= 4; i++) {
                         dataToSend += "\n" + (i + 1) + ". " + book_info.results.lists[flag].books[i].title + ' by ' + book_info.results.lists[flag].books[i].author;
                     }
                     callback(dataToSend);
                 }
-            }
+            })
+        }, (error) => {
+            dataToSend = "Sorry! couldn't fetch books list" + cityName;
+            callback(dataToSend);
         });
-    }, (error) => {
-        dataToSend = 'Sorry! Weather not found for ' + cityName;
-        callback(dataToSend);
-    });
+    }
 }
 
 server.post('/get-details', function (req, res) {
